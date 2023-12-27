@@ -6,23 +6,45 @@ import { UpdateProductDto } from './dto/update-product.dto';
 @Injectable()
 export class ProductsService {
   constructor(private prismaService: PrismaService) {}
+
   create(createProductDto: CreateProductDto) {
-    return createProductDto;
+    const { nome, desc, marca, valor } = createProductDto;
+    return this.prismaService.product.create({
+      data: {
+        name: nome,
+        description: desc,
+        suplier: marca,
+        value: valor,
+      },
+    });
   }
 
   findAll() {
-    return `This action returns all products`;
+    return this.prismaService.product.findMany();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} product`;
+    return this.prismaService.product.findUnique({
+      where: { id },
+    });
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {
-    return updateProductDto;
+    const { nome, desc, marca, valor } = updateProductDto;
+    return this.prismaService.product.update({
+      where: { id },
+      data: {
+        name: nome,
+        description: desc,
+        suplier: marca,
+        value: valor,
+      },
+    });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} product`;
+    return this.prismaService.product.delete({
+      where: { id },
+    });
   }
 }
