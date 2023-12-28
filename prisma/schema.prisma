@@ -11,16 +11,42 @@ datasource db {
 }
 
 model Product {
-  id       Int      @id @default(autoincrement())
-  name     String 
-  suplier  String?
-  description String
-  value    Float   
-  postedAt DateTime? 
-  enterprise User? @relation(fields: [authorId], references: [id])
-  authorId  Int?
+  id            Int      @id @default(autoincrement())
+  name          String 
+  suplier       String?
+  description   String
+  value         Float   
+  postedAt      DateTime? @default(now())
+  quantity      Int
+  enterprise    User? @relation(fields: [authorId], references: [id])
+  authorId      Int?
+  productInput  ProductInput[]
+  productOutput ProductOutput[]
 } 
-
+model ProductInput {
+  id          Int      @id @default(autoincrement())
+  productId   Int
+  name        String 
+  suplier     String?
+  description String
+  value       Float   
+  postedAt    DateTime? @default(now())
+  quantity    Int
+  authorId    Int?
+  products    Product @relation(fields: [productId], references: [id])
+}
+model ProductOutput {
+  id          Int      @id @default(autoincrement())
+  productId   Int
+  name        String 
+  suplier     String?
+  description String
+  value       Float   
+  postedAt    DateTime? @default(now())
+  quantity    Int
+  authorId    Int?
+  products    Product @relation(fields: [productId], references: [id])
+}
 model User {
   id Int @id @default(autoincrement())
   enterprise String
