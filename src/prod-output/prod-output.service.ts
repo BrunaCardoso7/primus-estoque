@@ -1,26 +1,43 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProdOutputDto } from './dto/create-prod-output.dto';
-import { UpdateProdOutputDto } from './dto/update-prod-output.dto';
-
+import { PrismaService } from 'src/prisma/prisma.service';
+import { NotFound } from 'src/erros';
+import { ProductOutputCreateInput } from '@prisma/client';
 @Injectable()
 export class ProdOutputService {
-  create(createProdOutputDto: CreateProdOutputDto) {
-    return 'This action adds a new prodOutput';
+  constructor(private prismaService: PrismaService) {}
+  async create(createProdOutputDto: CreateProdOutputDto) {
+    const product = await this.prismaService.product.findUnique({
+      where: { id: createProdOutputDto.productId },
+    });
+
+    if (!product) {
+      throw new NotFound(`Product not found in the database!`);
+    }
+
+    const data: ProductOutputCreateInput = {
+      name: '',
+      quantity: createProdOutputDto.quantity,
+      productId: createProdOutputDto.productId,
+    };
+
+    const result = await this.prismaService.$transaction([
+      this.prismaService.productOutput.create({
+        data,
+      }),
+      this.prismaService.product.update({
+        where: { id: createProdOutputDto.productId },
+        data: {
+          quantity: {
+            decrement: createProdOutputDto.quantity,
+          },
+        },
+      }),
+    ]);
+    return result[0];
   }
 
   findAll() {
-    return `This action returns all prodOutput`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} prodOutput`;
-  }
-
-  update(id: number, updateProdOutputDto: UpdateProdOutputDto) {
-    return `This action updates a #${id} prodOutput`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} prodOutput`;
+    return this.prismaService.productOutput.findMany();
   }
 }

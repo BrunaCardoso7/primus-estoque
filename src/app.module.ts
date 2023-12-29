@@ -7,7 +7,12 @@ import { ProdInputModule } from './prod-input/prod-input.module';
 import { ProdOutputModule } from './prod-output/prod-output.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), ProductsModule, ProdInputModule, ProdOutputModule],
+  imports: [
+    ConfigModule.forRoot(),
+    ProductsModule,
+    ProdInputModule,
+    ProdOutputModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
