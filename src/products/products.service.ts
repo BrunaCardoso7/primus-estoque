@@ -11,7 +11,13 @@ export class ProductsService {
   create(createProductDto: CreateProductDto) {
     try {
       const createdProduct = this.prismaService.product.create({
-        data: { ...createProductDto },
+        data: {
+          name: createProductDto.name,
+          description: createProductDto.description,
+          suplier: createProductDto.suplier,
+          value: createProductDto.value,
+          quantity: createProductDto.quantity,
+        },
       });
       return createdProduct;
     } catch (error) {

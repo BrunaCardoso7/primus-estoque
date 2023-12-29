@@ -1,6 +1,8 @@
 import {
+  IsInt,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsPositive,
   IsString,
   MaxLength,
@@ -21,6 +23,12 @@ export class CreateProductDto {
   @IsString()
   @IsNotEmpty()
   suplier: string;
+
+  @IsInt()
+  @IsPositive()
+  @IsNumber()
+  @IsOptional()
+  quantity: number;
 
   @IsPositive()
   @IsNumber()
