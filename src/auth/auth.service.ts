@@ -1,14 +1,10 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { NotFound } from 'src/erros';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { SignInDto, SignUpDto } from './dto/create-auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
-
+import * as bcrypt from 'bcrypt';
+import { InternalServerErrorException } from '@nestjs/common';
 @Injectable()
 export class AuthService {
   constructor(
@@ -26,16 +22,23 @@ export class AuthService {
       if (!user) {
         console.log('user not found');
       }
-      if (user?.passwd !== signIn.passwd) {
-        throw new UnauthorizedException();
+
+      const isMath = await bcrypt.compare(signIn.passwd, user.passwd);
+
+      if (!isMath) {
+        console.log('password not math');
       }
+
       const payload = { sub: user.id, email: user.email };
 
       return {
         access_token: await this.jwtService.signAsync(payload),
       };
     } catch (error) {
-      throw new NotFound('user is not in database' + error);
+      throw new InternalServerErrorException(
+        'Authentication failed',
+        error.message,
+      );
     }
   }
 
@@ -48,10 +51,13 @@ export class AuthService {
         );
         console.log('tem campo sem receber valor');
       }
+      const saltOrRounds = 10;
+      const hash = await bcrypt.hash(passwd, saltOrRounds);
       return await this.prismaService.user.create({
         data: {
-          ...signUpDto,
-          enterprise: signUpDto.enterprise,
+          email: email,
+          passwd: hash,
+          enterprise: enterprise,
         },
       });
     } catch (error) {
