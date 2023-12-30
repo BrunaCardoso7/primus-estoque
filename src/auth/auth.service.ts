@@ -1,10 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpCode, HttpStatus, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { SignInDto, SignUpDto } from './dto/create-auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
+import cookieParser from 'cookie-parser';
+import { Response } from 'express';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -13,7 +16,7 @@ export class AuthService {
     private prismaService: PrismaService,
   ) {}
 
-  async SingIn(signIn: SignInDto) {
+  async SingIn(signIn: SignInDto, res: Response) {
     try {
       if (!signIn.email || !signIn.passwd) {
         console.log('fill in all fields');
@@ -30,10 +33,11 @@ export class AuthService {
       }
 
       const payload = { sub: user.id, email: user.email };
+      const token = await this.jwtService.signAsync(payload);
 
-      return {
-        access_token: await this.jwtService.signAsync(payload),
-      };
+      return res
+        .status(HttpStatus.OK)
+        .json({ acessToken: token, message: 'Login sucessful' });
     } catch (error) {
       throw new InternalServerErrorException(
         'Authentication failed',
