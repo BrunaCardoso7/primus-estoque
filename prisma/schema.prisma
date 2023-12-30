@@ -40,8 +40,9 @@ model ProductOutput {
   products    Product @relation(fields: [productId], references: [id])
 }
 model User {
-  id Int @id @default(autoincrement())
+  id         Int @id @default(autoincrement())
   enterprise String
-  email String @unique
-  products Product[]
+  email      String @unique
+  passwd     String
+  products   Product[]
 }
