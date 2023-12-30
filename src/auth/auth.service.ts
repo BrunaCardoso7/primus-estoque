@@ -41,8 +41,18 @@ export class AuthService {
 
   async SignUp(signUpDto: SignUpDto) {
     try {
+      const { enterprise, email, passwd } = signUpDto;
+      if (!enterprise || !email || !passwd) {
+        console.log(
+          `enterprise: ${enterprise}, email: ${email}, passwd: ${passwd}`,
+        );
+        console.log('tem campo sem receber valor');
+      }
       return await this.prismaService.user.create({
-        data: { ...signUpDto },
+        data: {
+          ...signUpDto,
+          enterprise: signUpDto.enterprise,
+        },
       });
     } catch (error) {
       console.error('Can not possible create new user:' + error);

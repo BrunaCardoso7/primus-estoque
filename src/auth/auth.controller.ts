@@ -10,7 +10,7 @@ export class AuthController {
   singin(@Body() singinDto: SignInDto) {
     return this.authService.SingIn(singinDto);
   }
-  @Post()
+  @Post('signup')
   singUp(@Body() signUpDto: SignUpDto) {
     return this.authService.SignUp(signUpDto);
   }
