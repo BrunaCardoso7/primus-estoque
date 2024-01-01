@@ -1,11 +1,11 @@
-import { BadRequestException, HttpCode, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { SignInDto, SignUpDto } from './dto/create-auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
-import cookieParser from 'cookie-parser';
+
 import { Response } from 'express';
 
 @Injectable()
